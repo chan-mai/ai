@@ -5,8 +5,8 @@ services:
       context: .
     platform: linux/amd64
     volumes:
-      - './config/config.json:/ai/config.json:ro'
-      - './font.ttf:/ai/font.ttf:ro'
+      - './config/config.json:/ai/config.json'
+      - './font.ttf:/ai/font.ttf'
       - './data:/ai/data'
     restart: always
     tty: true
