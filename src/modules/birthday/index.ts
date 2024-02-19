@@ -29,11 +29,12 @@ export default class extends Module {
 		// Misskeyの誕生日は 2018-06-16 のような形式
 		const today = `${zeroPadding(m + 1, 2)}-${zeroPadding(d, 2)}`;
 
-		const birthFriends = this.ai.friends.find({
+		const birthFriends = this.ai?.friends?.find({
 			'user.birthday': { '$regex': new RegExp('-' + today + '$') }
 		} as any);
 
-		birthFriends.forEach(f => {
+		birthFriends?.forEach(f => {
+			if (!this.ai) return;
 			const friend = new Friend(this.ai, { doc: f });
 
 			// 親愛度が3以上必要
@@ -48,7 +49,7 @@ export default class extends Module {
 
 			const text = serifs.birthday.happyBirthday(friend.name);
 
-			this.ai.sendMessage(friend.userId, {
+			this.ai?.sendMessage(friend.userId, {
 				text: text
 			});
 		});

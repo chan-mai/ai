@@ -17,9 +17,12 @@ type Config = {
 	memoryDir?: string;
 };
 
-import config from '../config.json' assert { type: 'json' };
+import config from '../config/config.json' assert { type: 'json' };
 
-config.wsUrl = config.host.replace('http', 'ws');
-config.apiUrl = config.host + '/api';
+let conf = {
+	wsUrl: config.host.replace('http', 'ws'),
+	apiUrl: config.host + '/api',
+	...config,
+};
 
-export default config as Config;
+export default conf as Config;

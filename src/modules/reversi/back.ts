@@ -10,7 +10,8 @@ import got from 'got';
 import * as Reversi from './engine.js';
 import config from '@/config.js';
 import serifs from '@/serifs.js';
-import type { User } from '@/misskey/user.js';
+import { User } from '@/misskey/user.js';
+import { Note } from '@/misskey/note.js';
 
 function getUserName(user) {
 	return user.name || user.username;
@@ -62,8 +63,7 @@ class Session {
 	}
 
 	private get userName(): string {
-		let name = getUserName(this.user);
-		if (name.includes('$') || name.includes('<') || name.includes('*')) name = this.user.username;
+		const name = getUserName(this.user);
 		return `?[${name}](${config.host}/@${this.user.username})${titles.some(x => name.endsWith(x)) ? '' : 'さん'}`;
 	}
 
@@ -264,7 +264,7 @@ class Session {
 					}
 					break;
 				}
-
+	
 				default:
 					break;
 			}
@@ -455,8 +455,11 @@ class Session {
 				const res = await got.post(`${config.host}/api/notes/create`, {
 					json: body
 				}).json();
-
-				return res.createdNote;
+				type NotesCreateResponse = {
+					createdNote: Note,
+				};
+				
+				return (res as NotesCreateResponse).createdNote;
 			} catch (e) {
 				console.error(e);
 				return null;

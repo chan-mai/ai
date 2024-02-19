@@ -57,10 +57,10 @@ export default class extends Module {
 
 	@bindThis
 	private timeoutCallback(data) {
-		const friend = this.ai.lookupFriend(data.userId);
+		const friend = this.ai?.lookupFriend(data.userId);
 		if (friend == null) return; // 処理の流れ上、実際にnullになることは無さそうだけど一応
 		const text = serifs.timer.notify(data.time, friend.name);
-		this.ai.post({
+		this.ai?.post({
 			replyId: data.msgId,
 			text: text
 		});

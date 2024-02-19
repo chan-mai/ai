@@ -6,9 +6,9 @@ export default class extends Module {
 
 	@bindThis
 	public install() {
-		const tl = this.ai.connection.useSharedConnection('localTimeline');
+		const tl = this.ai?.connection?.useSharedConnection('localTimeline');
 
-		tl.on('note', this.onLocalNote);
+		tl?.on('note', this.onLocalNote);
 
 		return {};
 	}
@@ -17,13 +17,13 @@ export default class extends Module {
 	private onLocalNote(note: any) {
 		if (note.isFirstNote) {
 			setTimeout(() => {
-				this.ai.api('notes/create', {
+				this.ai?.api('notes/create', {
 					renoteId: note.id
 				});
 			}, 3000);
 
 			setTimeout(() => {
-				this.ai.api('notes/reactions/create', {
+				this.ai?.api('notes/reactions/create', {
 					noteId: note.id,
 					reaction: 'congrats'
 				});

@@ -3,7 +3,7 @@ import chalk from 'chalk';
 
 import 藍 from '@/ai.js';
 import Friend from '@/friend.js';
-import type { User } from '@/misskey/user.js';
+import { User } from '@/misskey/user.js';
 import includes from '@/utils/includes.js';
 import or from '@/utils/or.js';
 import config from '@/config.js';
@@ -64,7 +64,7 @@ export default class Message {
 		this.ai.api('users/show', {
 			userId: this.userId
 		}).then(user => {
-			this.friend.updateUser(user);
+			this.friend.updateUser(user as User);
 		});
 	}
 

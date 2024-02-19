@@ -9,7 +9,7 @@ export default class extends Module {
 	private connection?: any;
 	private recentStat: any;
 	private warned = false;
-	private lastWarnedAt: number;
+	private lastWarnedAt: number | null = null;
 
 	/**
 	 * 1秒毎のログ1分間分
@@ -20,7 +20,7 @@ export default class extends Module {
 	public install() {
 		if (!config.serverMonitoring) return {};
 
-		this.connection = this.ai.connection.useSharedConnection('serverStats');
+		this.connection = this.ai?.connection?.useSharedConnection('serverStats');
 		this.connection.on('stats', this.onStats);
 
 		setInterval(() => {
@@ -70,7 +70,7 @@ export default class extends Module {
 		this.lastWarnedAt = now;
 		//#endregion
 
-		this.ai.post({
+		this.ai?.post({
 			text: serifs.server.cpu
 		});
 

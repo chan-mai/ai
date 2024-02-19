@@ -1,21 +1,21 @@
 import { bindThis } from '@/decorators.js';
 import { parse } from 'twemoji-parser';
 
-import type { Note } from '@/misskey/note.js';
+import { Note } from '@/misskey/note.js';
 import Module from '@/module.js';
 import Stream from '@/stream.js';
 import includes from '@/utils/includes.js';
-import { sleep } from '@/utils/sleep.js';
+import { sleep } from '../../utils/sleep.js';
 
 export default class extends Module {
 	public readonly name = 'emoji-react';
 
-	private htl: ReturnType<Stream['useSharedConnection']>;
+	private htl: ReturnType<Stream['useSharedConnection']> | null = null;
 
 	@bindThis
 	public install() {
-		this.htl = this.ai.connection.useSharedConnection('homeTimeline');
-		this.htl.on('note', this.onNote);
+		this.htl = this.ai?.connection?.useSharedConnection('homeTimeline') ?? null;
+		this.htl?.on('note', this.onNote);
 
 		return {};
 	}
@@ -30,7 +30,7 @@ export default class extends Module {
 			if (!immediate) {
 				await sleep(1500);
 			}
-			this.ai.api('notes/reactions/create', {
+			this.ai?.api('notes/reactions/create', {
 				noteId: note.id,
 				reaction: reaction
 			});

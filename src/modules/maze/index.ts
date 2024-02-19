@@ -32,7 +32,7 @@ export default class extends Module {
 		const file = await this.genMazeFile(date);
 
 		this.log('Posting...');
-		this.ai.post({
+		this.ai?.post({
 			text: serifs.maze.post,
 			fileIds: [file.id]
 		});
@@ -47,7 +47,7 @@ export default class extends Module {
 		const data = renderMaze(seed, maze);
 
 		this.log('Image uploading...');
-		const file = await this.ai.upload(data, {
+		const file = await this.ai?.upload(data, {
 			filename: 'maze.png',
 			contentType: 'image/png'
 		});

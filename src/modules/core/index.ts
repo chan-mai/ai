@@ -85,6 +85,7 @@ export default class extends Module {
 			msg.reply(serifs.core.setNameOk(name));
 		} else {
 			msg.reply(serifs.core.san).then(reply => {
+				if (!reply) return;
 				this.subscribeReply(msg.userId, reply.id, {
 					name: name
 				});
@@ -101,7 +102,7 @@ export default class extends Module {
 
 		let text = '```\n';
 
-		for (const m of this.ai.modules) {
+		for (const m of this.ai?.modules ?? []) {
 			text += `${m.name}\n`;
 		}
 
@@ -119,7 +120,7 @@ export default class extends Module {
 		if (!msg.text) return false;
 		if (!msg.or(['v', 'version', 'バージョン'])) return false;
 
-		msg.reply(`\`\`\`\nv${this.ai.version}\n\`\`\``, {
+		msg.reply(`\`\`\`\nv${this.ai?.version}\n\`\`\``, {
 			immediate: true
 		});
 
@@ -143,6 +144,7 @@ export default class extends Module {
 			done();
 		} else {
 			msg.reply(serifs.core.yesOrNo).then(reply => {
+				if (!reply) return;
 				this.subscribeReply(msg.userId, reply.id, data);
 			});
 		}

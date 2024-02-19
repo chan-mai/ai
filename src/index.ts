@@ -1,6 +1,5 @@
 // AiOS bootstrapper
 
-import process from 'node:process';
 import chalk from 'chalk';
 import got from 'got';
 import promiseRetry from 'promise-retry';
@@ -34,6 +33,7 @@ import NotingModule from './modules/noting/index.js';
 import PollModule from './modules/poll/index.js';
 import ReminderModule from './modules/reminder/index.js';
 import CheckCustomEmojisModule from './modules/check-custom-emojis/index.js';
+import { User } from './misskey/user.js';
 
 console.log('   __    ____  _____  ___ ');
 console.log('  /__\\  (_  _)(  _  )/ __)');
@@ -45,13 +45,6 @@ function log(msg: string): void {
 }
 
 log(chalk.bold(`Ai v${pkg._v}`));
-
-process.on('uncaughtException', err => {
-	try {
-		console.error(`Uncaught exception: ${err.message}`);
-		console.dir(err, { colors: true, depth: 2 });
-	} catch { }
-});
 
 promiseRetry(retry => {
 	log(`Account fetching... ${chalk.gray(config.host)}`);
@@ -65,13 +58,13 @@ promiseRetry(retry => {
 }, {
 	retries: 3
 }).then(account => {
-	const acct = `@${account.username}`;
+	const acct = `@${(account as User).username}`;
 	log(chalk.green(`Account fetched successfully: ${chalk.underline(acct)}`));
 
 	log('Starting AiOS...');
 
 	// 藍起動
-	new 藍(account, [
+	new 藍((account as User), [
 		new CoreModule(),
 		new EmojiModule(),
 		new EmojiReactModule(),

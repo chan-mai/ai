@@ -9,7 +9,6 @@
 		"test": "jest"
 	},
 	"dependencies": {
-		"@types/chalk": "2.2.0",
 		"@types/lokijs": "1.5.14",
 		"@types/node": "20.11.5",
 		"@types/promise-retry": "1.1.6",
@@ -37,9 +36,9 @@
 		"uuid": "9.0.1",
 		"ws": "8.16.0"
 	},
-	"devDependencies": {
-	},
 	"nodemonConfig": {
-    "ignore": ["memory.json"]
-  }
+		"ignore": [
+			"memory.json"
+		]
+	}
 }

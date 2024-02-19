@@ -3,8 +3,9 @@ import loki from 'lokijs';
 import Module from '@/module.js';
 import Message from '@/message.js';
 import serifs from '@/serifs.js';
-import type { User } from '@/misskey/user.js';
+import { User } from '@/misskey/user.js';
 import { acct } from '@/utils/acct.js';
+import { InstallerResult, MentionHook, ContextHook } from '@/ai.js';
 
 type Game = {
 	votes: {
@@ -25,18 +26,18 @@ const limitMinutes = 10;
 export default class extends Module {
 	public readonly name = 'kazutori';
 
-	private games: loki.Collection<Game>;
+	private games: loki.Collection<Game> | null = null;
 
 	@bindThis
-	public install() {
-		this.games = this.ai.getCollection('kazutori');
+	public install() : InstallerResult {
+		this.games = this.ai?.getCollection('kazutori') ?? null;
 
 		this.crawleGameEnd();
 		setInterval(this.crawleGameEnd, 1000);
 
 		return {
-			mentionHook: this.mentionHook,
-			contextHook: this.contextHook
+			mentionHook: this.mentionHook as MentionHook,
+			contextHook: this.contextHook as ContextHook
 		};
 	}
 
@@ -44,9 +45,9 @@ export default class extends Module {
 	private async mentionHook(msg: Message) {
 		if (!msg.includes(['数取り'])) return false;
 
-		const games = this.games.find({});
+		const games = this.games?.find({});
 
-		const recentGame = games.length == 0 ? null : games[games.length - 1];
+		const recentGame = games?.length == 0 || !games ? null : games[games.length - 1];
 
 		if (recentGame) {
 			// 現在アクティブなゲームがある場合
@@ -64,11 +65,11 @@ export default class extends Module {
 			}
 		}
 
-		const post = await this.ai.post({
+		const post = await this.ai?.post({
 			text: serifs.kazutori.intro(limitMinutes)
 		});
-
-		this.games.insertOne({
+		if (!post) return;
+		this.games?.insertOne({
 			votes: [],
 			isEnded: false,
 			startedAt: Date.now(),
@@ -88,7 +89,7 @@ export default class extends Module {
 			reaction: 'hmm'
 		};
 
-		const game = this.games.findOne({
+		const game = this.games?.findOne({
 			isEnded: false
 		});
 
@@ -129,7 +130,7 @@ export default class extends Module {
 			number: num
 		});
 
-		this.games.update(game);
+		this.games?.update(game);
 
 		return {
 			reaction: 'like'
@@ -141,7 +142,7 @@ export default class extends Module {
 	 */
 	@bindThis
 	private crawleGameEnd() {
-		const game = this.games.findOne({
+		const game = this.games?.findOne({
 			isEnded: false
 		});
 
@@ -159,13 +160,13 @@ export default class extends Module {
 	@bindThis
 	private finish(game: Game) {
 		game.isEnded = true;
-		this.games.update(game);
+		this.games?.update(game);
 
 		this.log('Kazutori game finished');
 
 		// お流れ
 		if (game.votes.length <= 1) {
-			this.ai.post({
+			this.ai?.post({
 				text: serifs.kazutori.onagare,
 				renoteId: game.postId
 			});
@@ -194,14 +195,14 @@ export default class extends Module {
 			}
 		}
 
-		const winnerFriend = winner ? this.ai.lookupFriend(winner.id) : null;
+		const winnerFriend = winner ? this.ai?.lookupFriend(winner.id) : null;
 		const name = winnerFriend ? winnerFriend.name : null;
 
 		const text = results.join('\n') + '\n\n' + (winner
 			? serifs.kazutori.finishWithWinner(acct(winner), name)
 			: serifs.kazutori.finishWithNoWinner);
 
-		this.ai.post({
+		this.ai?.post({
 			text: text,
 			cw: serifs.kazutori.finish,
 			renoteId: game.postId

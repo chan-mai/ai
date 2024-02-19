@@ -4,7 +4,7 @@ import Module from '@/module.js';
 import serifs from '@/serifs.js';
 import { genItem } from '@/vocabulary.js';
 import config from '@/config.js';
-import type { Note } from '@/misskey/note.js';
+import { Note } from '@/misskey/note.js';
 
 export default class extends Module {
 	public readonly name = 'poll';
@@ -73,7 +73,7 @@ export default class extends Module {
 			genItem(),
 		];
 
-		const note = await this.ai.post({
+		const note = await this.ai?.post({
 			text: poll[1],
 			poll: {
 				choices,
@@ -81,7 +81,7 @@ export default class extends Module {
 				multiple: false,
 			}
 		});
-
+		if (!note) return;
 		// タイマーセット
 		this.setTimeoutWithPersistence(duration + 3000, {
 			title: poll[0],
@@ -104,7 +104,7 @@ export default class extends Module {
 
 	@bindThis
 	private async timeoutCallback({ title, noteId }) {
-		const note: Note = await this.ai.api('notes/show', { noteId });
+		const note = await this.ai?.api('notes/show', { noteId }) as Note;
 
 		const choices = note.poll!.choices;
 
@@ -124,19 +124,19 @@ export default class extends Module {
 		const mostVotedChoices = choices.filter(choice => choice.votes === mostVotedChoice.votes);
 
 		if (mostVotedChoice.votes === 0) {
-			this.ai.post({ // TODO: Extract serif
+			this.ai?.post({ // TODO: Extract serif
 				text: '投票はありませんでした',
 				renoteId: noteId,
 			});
 		} else if (mostVotedChoices.length === 1) {
-			this.ai.post({ // TODO: Extract serif
+			this.ai?.post({ // TODO: Extract serif
 				cw: `${title}アンケートの結果発表です！`,
 				text: `結果は${mostVotedChoice.votes}票の「${mostVotedChoice.text}」でした！`,
 				renoteId: noteId,
 			});
 		} else {
 			const choices = mostVotedChoices.map(choice => `「${choice.text}」`).join('と');
-			this.ai.post({ // TODO: Extract serif
+			this.ai?.post({ // TODO: Extract serif
 				cw: `${title}アンケートの結果発表です！`,
 				text: `結果は${mostVotedChoice.votes}票の${choices}でした！`,
 				renoteId: noteId,

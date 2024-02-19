@@ -14,13 +14,13 @@ export default class extends Module {
 		isEnded: boolean;
 		startedAt: number;
 		endedAt: number | null;
-	}>;
+	}> | null = null;
 
 	@bindThis
 	public install() {
-		this.guesses = this.ai.getCollection('guessingGame', {
+		this.guesses = this.ai?.getCollection('guessingGame', {
 			indices: ['userId']
-		});
+		}) ?? null;
 
 		return {
 			mentionHook: this.mentionHook,
@@ -32,14 +32,14 @@ export default class extends Module {
 	private async mentionHook(msg: Message) {
 		if (!msg.includes(['数当て', '数あて'])) return false;
 
-		const exist = this.guesses.findOne({
+		const exist = this.guesses?.findOne({
 			userId: msg.userId,
 			isEnded: false
 		});
 
 		const secret = Math.floor(Math.random() * 100);
 
-		this.guesses.insertOne({
+		this.guesses?.insertOne({
 			userId: msg.userId,
 			secret: secret,
 			tries: [],
@@ -49,6 +49,7 @@ export default class extends Module {
 		});
 
 		msg.reply(serifs.guessingGame.started).then(reply => {
+			if (!reply) return;
 			this.subscribeReply(msg.userId, reply.id);
 		});
 
@@ -59,7 +60,7 @@ export default class extends Module {
 	private async contextHook(key: any, msg: Message) {
 		if (msg.text == null) return;
 
-		const exist = this.guesses.findOne({
+		const exist = this.guesses?.findOne({
 			userId: msg.userId,
 			isEnded: false
 		});
@@ -74,7 +75,7 @@ export default class extends Module {
 			msg.reply(serifs.guessingGame.cancel);
 			exist.isEnded = true;
 			exist.endedAt = Date.now();
-			this.guesses.update(exist);
+			this.guesses?.update(exist);
 			this.unsubscribeReply(key);
 			return;
 		}
@@ -83,6 +84,7 @@ export default class extends Module {
 
 		if (guess == null) {
 			msg.reply(serifs.guessingGame.nan).then(reply => {
+				if (!reply) return;
 				this.subscribeReply(msg.userId, reply.id);
 			});
 			return;
@@ -117,10 +119,11 @@ export default class extends Module {
 			this.unsubscribeReply(key);
 		}
 
-		this.guesses.update(exist);
+		this.guesses?.update(exist);
 
 		msg.reply(text).then(reply => {
 			if (!end) {
+				if (!reply) return;
 				this.subscribeReply(msg.userId, reply.id);
 			}
 		});
