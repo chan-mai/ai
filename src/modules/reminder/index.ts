@@ -112,8 +112,8 @@ export default class extends Module {
 			return;
 		}
 
-		const done = msg.includes(['done', 'やった', 'やりました', 'はい']);
-		const cancel = msg.includes(['やめる', 'やめた', 'キャンセル']);
+		const done = msg.includes(['done', 'やった', 'やりました', 'はい', 'おわった', '終わった']);
+		const cancel = msg.includes(['やめる', 'やめた', 'キャンセル', 'とりけし', '取り消し']);
 		const isOneself = msg.userId === remind.userId;
 
 		if ((done || cancel) && isOneself) {
