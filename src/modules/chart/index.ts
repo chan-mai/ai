@@ -5,6 +5,8 @@ import Message from '@/message.js';
 import { renderChart } from './render-chart.js';
 import { items } from '@/vocabulary.js';
 import config from '@/config.js';
+import * as fs from 'fs';
+import * as chalk from 'chalk';
 
 export default class extends Module {
 	public readonly name = 'chart';
@@ -12,6 +14,17 @@ export default class extends Module {
 	@bindThis
 	public install() {
 		if (config.chartEnabled === false) return {};
+
+		try {
+			fs.realpathSync("./font.ttf");
+		} catch (e: any) {
+			if (e.code === "ENOENT") {
+				this.log(chalk.yellow("font.ttf not found! chart feature will be disabled."));
+				return {};
+			} else {
+				throw e;
+			}
+		}
 
 		this.post();
 		setInterval(this.post, 1000 * 60 * 3);
