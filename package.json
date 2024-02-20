@@ -17,6 +17,7 @@
 		"@types/twemoji-parser": "13.1.4",
 		"@types/uuid": "9.0.7",
 		"@types/ws": "8.5.10",
+		"accurate-interval": "1.0.9",
 		"canvas": "2.11.2",
 		"chalk": "5.3.0",
 		"formdata-node": "6.0.3",
