@@ -9,5 +9,7 @@ services:
       - './font.ttf:/ai/font.ttf'
       - './data:/ai/data'
     restart: always
+    environment:
+      TZ: Asia/Tokyo
     tty: true
     stdin_open: true
