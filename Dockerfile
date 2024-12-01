@@ -1,21 +1,32 @@
 FROM node:20-bookworm
 
-RUN apt-get update
-RUN apt-get install -y tini
-RUN apt-get update
-RUN apt-get install mecab libmecab-dev mecab-ipadic-utf8 make curl xz-utils file ca-certificates git sudo unzip patch --no-install-recommends -y
-RUN apt-get clean
-RUN rm -rf /var/lib/apt-get/lists/*
-RUN git clone --depth 1 https://github.com/neologd/mecab-ipadic-neologd.git /opt/mecab-ipadic-neologd
-RUN cat /opt/mecab-ipadic-neologd/libexec/make-mecab-ipadic-neologd.sh | sed "s/ja\.osdn/invaild\.example/" > /opt/mecab-ipadic-neologd/libexec/make-mecab-ipadic-neologd-new.sh
-RUN chmod +rx /opt/mecab-ipadic-neologd/libexec/make-mecab-ipadic-neologd-new.sh
-RUN mv /opt/mecab-ipadic-neologd/libexec/make-mecab-ipadic-neologd-new.sh /opt/mecab-ipadic-neologd/libexec/make-mecab-ipadic-neologd.sh 
-RUN cd /opt/mecab-ipadic-neologd
-RUN /opt/mecab-ipadic-neologd/bin/install-mecab-ipadic-neologd -n -y
-RUN rm -rf /opt/mecab-ipadic-neologd
-RUN echo "dicdir = /usr/lib/x86_64-linux-gnu/mecab/dic/mecab-ipadic-neologd/" > /etc/mecabrc
-RUN apt-get purge git make curl xz-utils file -y;
-RUN mkdir /ai
+RUN apt-get update && apt-get install tini --no-install-recommends -y && apt-get clean && rm -rf /var/lib/apt-get/lists/*
+
+ARG enable_mecab=1
+
+RUN if [ $enable_mecab -ne 0 ]; then apt-get update \
+  && apt-get install mecab libmecab-dev mecab-ipadic-utf8 make curl xz-utils file sudo --no-install-recommends -y \
+  && apt-get clean \
+  && rm -rf /var/lib/apt-get/lists/* \
+  && cd /opt \
+  && git clone --depth 1 https://github.com/yokomotod/mecab-ipadic-neologd.git \
+  && cd /opt/mecab-ipadic-neologd \
+  && ./bin/install-mecab-ipadic-neologd -n -y \
+  && rm -rf /opt/mecab-ipadic-neologd \
+  && echo "dicdir = /usr/lib/x86_64-linux-gnu/mecab/dic/mecab-ipadic-neologd/" > /etc/mecabrc \
+  && apt-get purge git make curl xz-utils file -y; fi
+
+# canvasモジュールのビルドに必要な依存パッケージを追加
+RUN apt-get update && apt-get install -y \
+  build-essential \
+  libcairo2-dev \
+  libpango1.0-dev \
+  libjpeg-dev \
+  libgif-dev \
+  librsvg2-dev \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
 COPY . /ai
 WORKDIR /ai
 RUN npm install -g npm pnpm
