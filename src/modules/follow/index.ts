@@ -19,13 +19,21 @@ export default class extends Module {
 				userId: msg.userId
 			});
 			if (!user.isFollowing) {
-				this.ai?.api('following/create', {
-					userId: msg.userId,
-				});
-				return {
-					reaction: msg.friend.love >= 0 ? 'like' : null
-				};
+				try {
+					this.ai?.api('following/create', {
+						userId: msg.userId,
+					});
+					return {
+						reaction: msg.friend.love >= 0 ? 'like' : null
+					};
+				} catch (error) {
+					console.error('Failed to follow user:', error);
+				}
 			} else {
+				// 傲慢な奴め
+				if ( !msg.user.isFollowing ) {
+					await msg.reply('どちらさまですか？');
+				}
 				return {
 					reaction: msg.friend.love >= 0 ? 'hmm' : null
 				};
