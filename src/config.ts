@@ -12,8 +12,7 @@ type Config = {
 	serverMonitoring: boolean;
 	checkEmojisEnabled?: boolean;
 	checkEmojisAtOnce?: boolean;
-	geminiProApiKey?: string;
-	pLaMoApiKey?: string;
+	geminiApiKey?: string;
 	prompt?: string;
 	mecab?: string;
 	mecabDic?: string;
@@ -28,4 +27,4 @@ let conf = {
 	...config,
 };
 
-export default conf as Config;
+export default conf as unknown as Config;

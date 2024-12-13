@@ -6,7 +6,7 @@ import { renderChart } from './render-chart.js';
 import { items } from '@/vocabulary.js';
 import config from '@/config.js';
 import * as fs from 'fs';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 export default class extends Module {
 	public readonly name = 'chart';
