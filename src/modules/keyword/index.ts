@@ -36,7 +36,7 @@ export default class extends Module {
 
 	@bindThis
 	private async learn() {
-		const tl = await this.ai?.api('notes/local-timeline', {
+		const tl = await this.ai?.api('notes/hybrid-timeline', {
 			limit: 30
 		}) as Note[];
 
