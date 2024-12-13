@@ -5,6 +5,7 @@ import Message from '@/message.js';
 import config from '@/config.js';
 import urlToBase64 from '@/utils/url2base64.js';
 import got from 'got';
+import { Note } from '@/misskey/note.js';
 
 type AiChat = {
 	question: string;
@@ -23,6 +24,7 @@ export default class extends Module {
 
 	@bindThis
 	public install() {
+		setInterval(this.replyLocalTimelineNotes, 1000 * 60 * 60);
 		return {
 			mentionHook: this.mentionHook
 		};
@@ -113,9 +115,54 @@ export default class extends Module {
 	}
 
 	@bindThis
+	private async replyLocalTimelineNotes() {
+		const tl = await this.ai?.api('notes/local-timeline', {
+			limit: 30
+		}) as Note[];
+
+		const interestedNotes = tl.filter(note =>
+			note.userId !== this.ai?.account.id &&
+			note.text != null &&
+			note.cw == null);
+		
+		// interestedNotesからランダムなノートを選択
+		const rnd = Math.floor(Math.random() * interestedNotes.length);
+		const note = interestedNotes[rnd];
+		//const note = interestedNotes[0];
+
+		let text:string, aiChat:AiChat;
+		let prompt:string = '';
+		if (config.prompt) {
+			prompt = config.prompt;
+		}
+		// APIキーないよないよ
+		if (!config.geminiApiKey) return false;
+		
+		const base64Image:Base64Image|null = await this.note2base64Image(note.id);
+		aiChat = {
+			question: note.text!,
+			prompt: prompt,
+			api: GEMINI_API_ENDPOINT,
+			key: config.geminiApiKey
+		};
+
+		text = await this.genTextByGemini(aiChat, base64Image);
+
+		if (text == null) {
+			this.log('The result is invalid. It seems that tokens and other items need to be reviewed.')
+			return false;
+		}
+
+		this.log('Replying...');
+		this.ai?.post({
+			text: serifs.aichat.post(text),
+			replyId: note.id
+		});
+	}
+
+	@bindThis
 	private async mentionHook(msg: Message) {
 		if (!msg.includes([this.name])) {
-			this.log('AiChat not requested');
 			return false;
 		} else {
 			this.log('AiChat requested');
