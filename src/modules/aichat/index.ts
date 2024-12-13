@@ -168,7 +168,9 @@ export default class extends Module {
 			this.log('AiChat requested');
 		}
 
-		const question = msg.extractedText;
+const question = msg.extractedText
+							.replace(RegExp(this.name, "i");, '')
+							.trim();
 
 		let text:string, aiChat:AiChat;
 		let prompt:string = '';
