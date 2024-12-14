@@ -1,11 +1,11 @@
-version: '3'
 services:
   app:
-    build:
-      context: .
-    platform: linux/amd64
+    #build:
+    #  context: .
+    #platform: linux/amd64
+    image: ghcr.io/chan-mai/ai:latest
     volumes:
-      - './config/config.json:/ai/config.json'
+      - './config.json:/ai/config.json'
       - './font.ttf:/ai/font.ttf'
       - './data:/ai/data'
     restart: always
