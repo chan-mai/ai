@@ -117,13 +117,14 @@ export default class extends Module {
 	@bindThis
 	private async replyLocalTimelineNotes() {
 		const tl = await this.ai?.api('notes/local-timeline', {
-			limit: 30
+			limit: 10
 		}) as Note[];
 
-		const interestedNotes = tl.filter(note =>
+		const interestedNotes = tl.filter(async note =>
 			note.userId !== this.ai?.account.id &&
 			note.text != null &&
-			note.cw == null);
+			note.cw == null &&
+			(await this.ai?.api('notes/show', { noteId: note.id }) as Note).reply !== null);
 		
 		// interestedNotesからランダムなノートを選択
 		const rnd = Math.floor(Math.random() * interestedNotes.length);
@@ -162,10 +163,16 @@ export default class extends Module {
 
 	@bindThis
 	private async mentionHook(msg: Message) {
-		if (!msg.includes([this.name])) {
-			return false;
-		} else {
+		if (
+			msg.includes([this.name]) ||
+			(
+				(await this.ai?.api('notes/show', { noteId: msg.replyId }) as Note)?.userId === this.ai?.account.id &&
+				(await this.ai?.api('notes/show', { noteId: msg.replyId }) as Note).text?.includes(this.name)
+			)
+		) {
 			this.log('AiChat requested');
+		} else {
+			return false;
 		}
 
 		const question = msg.extractedText
