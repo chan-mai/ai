@@ -5,7 +5,7 @@ services:
     #platform: linux/amd64
     image: ghcr.io/chan-mai/ai:latest
     volumes:
-      - './config.json:/ai/config.json'
+      - './config.json:/ai/config/config.json'
       - './font.ttf:/ai/font.ttf'
       - './data:/ai/data'
     restart: always
