@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install tini --no-install-recommends -y && apt-get
 ARG enable_mecab=1
 
 RUN if [ $enable_mecab -ne 0 ]; then apt-get update \
-  && apt-get install mecab libmecab-dev mecab-ipadic-utf8 make curl xz-utils file sudo --no-install-recommends -y \
+  && apt-get install mecab libmecab-dev mecab-ipadic-utf8 make curl xz-utils file ca-certificates git unzip patch sudo --no-install-recommends -y \
   && apt-get clean \
   && rm -rf /var/lib/apt-get/lists/* \
   && cd /opt \
@@ -27,6 +27,7 @@ RUN apt-get update && apt-get install -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
+RUN mkdir /ai
 COPY . /ai
 WORKDIR /ai
 RUN npm install -g npm pnpm
