@@ -24,7 +24,7 @@ export default class extends Module {
 
 	@bindThis
 	public install() {
-		setInterval(this.replyLocalTimelineNotes, 1000 * 60 * 60);
+		setInterval(this.replySTLNotes, 1000 * 60 * 60);
 		return {
 			mentionHook: this.mentionHook
 		};
@@ -115,8 +115,8 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private async replyLocalTimelineNotes() {
-		const tl = await this.ai?.api('notes/local-timeline', {
+	private async replySTLNotes() {
+		const tl = await this.ai?.api('notes/hybrid-timeline', {
 			limit: 10
 		}) as Note[];
 
