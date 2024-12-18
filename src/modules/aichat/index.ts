@@ -161,8 +161,7 @@ export default class extends Module {
 		this.log('Replying...');
 		this.ai?.post({
 			text: serifs.aichat.post(text),
-			replyId: note.id,
-			visibility: "home"
+			replyId: note.id
 		});
 	}
 
