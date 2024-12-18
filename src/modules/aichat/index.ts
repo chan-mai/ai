@@ -24,7 +24,7 @@ export default class extends Module {
 
 	@bindThis
 	public install() {
-		setInterval(this.replySTLNotes, 1000 * 60 * 60);
+		setInterval(this.replySTLNotes, 1000 * 60 * 30);
 		return {
 			mentionHook: this.mentionHook
 		};
@@ -124,7 +124,11 @@ export default class extends Module {
 			note.userId !== this.ai?.account.id &&
 			note.text != null &&
 			note.cw == null &&
-			(await this.ai?.api('notes/show', { noteId: note.id }) as Note).reply !== null);
+			// 誰かへのリプライではない
+			(await this.ai?.api('notes/show', { noteId: note.id }) as Note).replyId !== null &&
+			// 重複回避のため、すでに何かしらのリプがついているノートは除外(0のみpass)
+			(await this.ai?.api('notes/show', { noteId: note.id }) as Note).repliesCount === 0
+		);
 		
 		// interestedNotesからランダムなノートを選択
 		const rnd = Math.floor(Math.random() * interestedNotes.length);
