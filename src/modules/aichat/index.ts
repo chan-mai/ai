@@ -139,6 +139,13 @@ export default class extends Module {
 		let prompt:string = '';
 		if (config.prompt) {
 			prompt = config.prompt;
+			try {
+				const userData: any = await this.ai?.api('users/show', { userId: note.userId });
+				const name = userData?.name || userData?.username || '名無し';
+				prompt = prompt.replace('{name}', name);
+			} catch (err: unknown) {
+					this.log('Failed to get user data for name replacement.');
+			}
 		}
 		// APIキーないよないよ
 		if (!config.geminiApiKey) return false;
@@ -195,6 +202,13 @@ export default class extends Module {
 		let prompt:string = '';
 		if (config.prompt) {
 			prompt = config.prompt;
+			try {
+				const userData: any = await this.ai?.api('users/show', { userId: note.userId });
+				const name = userData?.name || userData?.username || '名無し';
+				prompt = prompt.replace('{name}', name);
+			} catch (err: unknown) {
+					this.log('Failed to get user data for name replacement.');
+			}
 		}
 		// APIキーないよないよ
 		if (!config.geminiApiKey) {
