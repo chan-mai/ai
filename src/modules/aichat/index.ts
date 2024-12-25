@@ -203,7 +203,7 @@ export default class extends Module {
 		if (config.prompt) {
 			prompt = config.prompt;
 			try {
-				const userData: any = await this.ai?.api('users/show', { userId: note.userId });
+				const userData: any = await this.ai?.api('users/show', { userId: msg.userId });
 				const name = userData?.name || userData?.username || '名無し';
 				prompt = prompt.replace('{name}', name);
 			} catch (err: unknown) {
