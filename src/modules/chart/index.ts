@@ -35,7 +35,7 @@ export default class extends Module {
 		const file = await this.genChart('notes');
 
 		this.log('Posting...');
-		this.ai.post({
+		this.ai?.post({
 			text: serifs.chart.post,
 			fileIds: [file.id]
 		});
@@ -48,7 +48,7 @@ export default class extends Module {
 		let chart;
 
 		if (type === 'userNotes') {
-			const data = await this.ai.api('charts/user/notes', {
+			const data: any = await this.ai?.api('charts/user/notes', {
 				span: 'day',
 				limit: 30,
 				userId: params.user.id
@@ -65,7 +65,7 @@ export default class extends Module {
 				}]
 			};
 		} else if (type === 'followers') {
-			const data = await this.ai.api('charts/user/following', {
+			const data: any = await this.ai?.api('charts/user/following', {
 				span: 'day',
 				limit: 30,
 				userId: params.user.id
@@ -80,7 +80,7 @@ export default class extends Module {
 				}]
 			};
 		} else if (type === 'notes') {
-			const data = await this.ai.api('charts/notes', {
+			const data: any = await this.ai?.api('charts/notes', {
 				span: 'day',
 				limit: 30,
 			});
@@ -126,7 +126,7 @@ export default class extends Module {
 		const img = renderChart(chart);
 
 		this.log('Image uploading...');
-		const file = await this.ai.upload(img, {
+		const file = await this.ai?.upload(img, {
 			filename: 'chart.png',
 			contentType: 'image/png'
 		});
