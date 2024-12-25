@@ -175,6 +175,14 @@ export default class extends Module {
 			)
 		) {
 			this.log('AiChat requested');
+
+			const relation = await this.ai?.api('users/relation', { userId: msg.userId }) as any[];
+
+			if (!relation?.[0]?.isFollowing && msg.user.host !== config.host) {
+					this.log('The user is not following me:' + msg.userId);
+					msg.reply('ごめんね…そういうのはもっと仲良くなってからかな…？？');
+					return false;
+			}
 		} else {
 			return false;
 		}
