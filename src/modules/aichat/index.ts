@@ -168,7 +168,8 @@ export default class extends Module {
 		this.log('Replying...');
 		this.ai?.post({
 			text: serifs.aichat.post(text),
-			replyId: note.id
+			replyId: note.id,
+			visibility: 'home'
 		});
 	}
 
@@ -185,7 +186,7 @@ export default class extends Module {
 
 			const relation = await this.ai?.api('users/relation', { userId: msg.userId }) as any[];
 
-			if (!relation?.[0]?.isFollowing && msg.user.host !== config.host) {
+			if (!relation?.[0]?.isFollowing && !config.host.includes(msg.user.host as string)) {
 					this.log('The user is not following me:' + msg.userId);
 					msg.reply('ごめんね…そういうのはもっと仲良くなってからかな…？？');
 					return false;
