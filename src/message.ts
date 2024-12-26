@@ -74,6 +74,7 @@ export default class Message {
 		cw?: string;
 		renote?: string;
 		immediate?: boolean;
+		visibility?: string;
 	}) {
 		if (text == null) return;
 
@@ -87,6 +88,7 @@ export default class Message {
 			replyId: this.note.id,
 			text: text,
 			fileIds: opts?.file ? [opts?.file.id] : undefined,
+			visibility: opts?.visibility,
 			cw: opts?.cw,
 			renoteId: opts?.renote
 		});

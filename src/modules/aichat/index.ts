@@ -188,7 +188,12 @@ export default class extends Module {
 
 			if (!relation?.[0]?.isFollowing && !config.host.includes(msg.user.host as string)) {
 					this.log('The user is not following me:' + msg.userId);
-					msg.reply('ごめんね…そういうのはもっと仲良くなってからかな…？？');
+					msg.reply(
+						'ごめんね…そういうのはもっと仲良くなってからかな…？？',
+						{
+							visibility: 'home'
+						}
+					);
 					return false;
 			}
 		} else {
@@ -213,7 +218,11 @@ export default class extends Module {
 		}
 		// APIキーないよないよ
 		if (!config.geminiApiKey) {
-			msg.reply(serifs.aichat.nothing);
+			msg.reply(serifs.aichat.nothing,
+				{
+					visibility: 'home'
+				}
+			);
 			return false;
 		}
 		const base64Image:Base64Image|null = await this.note2base64Image(msg.id);
@@ -228,12 +237,21 @@ export default class extends Module {
 
 		if (text == null) {
 			this.log('The result is invalid. It seems that tokens and other items need to be reviewed.')
-			msg.reply(serifs.aichat.error);
+			msg.reply(serifs.aichat.error,
+				{
+					visibility: 'home'
+				}
+			);
 			return false;
 		}
 
 		this.log('Replying...');
-		msg.reply(serifs.aichat.post(text));
+		msg.reply(
+			serifs.aichat.post(text),
+			{
+				visibility: 'home'
+			}
+		);
 
 		return {
 			reaction: 'like'
